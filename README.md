@@ -1,1 +1,17 @@
-# EARL
+# EARL: Toward Stable Reinforcement Learning throughEvolutionary Algorithms
+
+## Abstract
+
+Deep reinforcement learning (RL) has experienced tremendous growth in the past few years. However, training stability of agents continues to be an open research question. Here, the authors present a closely entwined hybrid method which combines concepts from the fields of evolutionary computing (EC) and deep RL as a means of mitigating training instability in RL agents. We are able to show that our method trains more consistently than RL and EC baselines alone. We also show that by employing ensemble methods, performance of RL agents can be improved during test time while simultaneously preserving the training stability of the agent. Finally, we conduct an ablation study to identify components within the EARL agent responsible for highest contribution. Though this work is in its early phases, it stands to benefit the stability of RL agents during training by combining multiple AI disciplines.
+
+
+
+### Requirements 
+
+* Python 3.7
+* Libraries 
+  * numpy
+  * gym
+  * matplotlib
+  * scipy
+  * torch
