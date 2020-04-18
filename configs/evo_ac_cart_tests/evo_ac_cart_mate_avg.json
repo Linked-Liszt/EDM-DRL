@@ -1,0 +1,71 @@
+{
+    "experiment": {
+        "timesteps": 100000,
+        "num_runs": 30,
+        "env": "CartPole-v1",
+        "log_name": "evo_ac_cart_mate_avg",
+        "log_run": false,
+        "print_interval": 1,
+        "log_interval": 2000,
+        "log_path": "checkpoints/evo_ac_cart_tests",
+        "test_strat": "weightedvote"
+    },
+
+    "evo_ac": {
+        "log_path": "output_nets/ant",
+        "pop_size": 10,
+        "value_coeff": 0.5,
+        "entropy_coeff": 0.05,
+        "hold_elite":true,
+        "recomb_nums": [3,2],
+        "mate_num": 4,
+        "learning_rate": [5e-5, 5e-5],
+        "mutation_type": "uniform",
+        "mut_scale":  0.0,
+        "lr_decay": 0.98
+
+    },
+
+    "neural_net": {
+        "learning_rate":3e-2,
+        "shared": [
+            {
+                "type": "Linear",
+                "params": [4, 128], 
+                "kwargs": {"bias":true}
+            }, 
+            {
+                "type": "ReLU",
+                "params": [], 
+                "kwargs": {}
+            }
+
+        ],
+        "policy":
+        [
+            {
+                "type": "Linear",
+                "params": [128, 128], 
+                "kwargs": {"bias":true}
+            },
+            {
+                "type": "ReLU",
+                "params": [], 
+                "kwargs": {}
+            },
+            {
+                "type": "Linear",
+                "params": [128, 2], 
+                "kwargs": {"bias":true}
+            }
+        ],
+        "value": [
+            {
+                "type": "Linear",
+                "params": [128, 1], 
+                "kwargs": {"bias":true}
+            }
+        ]
+        
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "experiment": {
+        "timesteps": 100000,
+        "step_interval": 5000,
+        "num_runs": 30,
+        "num_envs": 2,
+        "env": "CartPole-v1",
+        "log_name": "cartpole_baseline_low",
+        "log_run": false,
+        "print_interval": 1,
+        "log_path": "checkpoints/baselines"
+    },
+
+    "baseline": {
+        "gamma": 0.99, 
+        "n_steps": 8, 
+        "lr_schedule": "linear", 
+        "learning_rate": 0.06399380924552395, 
+        "ent_coef": 0.009730594179842877, 
+        "vf_coef": 0.8545887458466241
+    },
+
+    "evo_ac": {
+
+    },
+
+    "neural_net": {
+        
+    }
+}
