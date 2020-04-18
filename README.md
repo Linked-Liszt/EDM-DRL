@@ -4,14 +4,28 @@
 
 Deep reinforcement learning (RL) has experienced tremendous growth in the past few years. However, training stability of agents continues to be an open research question. Here, the authors present a closely entwined hybrid method which combines concepts from the fields of evolutionary computing (EC) and deep RL as a means of mitigating training instability in RL agents. We are able to show that our method trains more consistently than RL and EC baselines alone. We also show that by employing ensemble methods, performance of RL agents can be improved during test time while simultaneously preserving the training stability of the agent. Finally, we conduct an ablation study to identify components within the EARL agent responsible for highest contribution. Though this work is in its early phases, it stands to benefit the stability of RL agents during training by combining multiple AI disciplines.
 
-
-
-### Requirements 
+### Requirements
 
 * Python 3.7
-* Libraries 
+* Libraries
   * numpy
   * gym
   * matplotlib
   * scipy
   * torch
+
+### Results
+
+The graphs which correspond to the results of this work are documented below.
+
+#### Comparison Against EC and RL Baselines
+
+<img src="graphics/baseline.png"/>
+
+#### Comparison of Ensemble Strategies vs. 1-Elite Strategy
+
+<img src="graphics/ensemble.png"/>
+
+#### Ablation Study of Mutation / Recombination Methods
+
+<img src="graphics/ablation.png"/>
