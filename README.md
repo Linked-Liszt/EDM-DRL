@@ -1,4 +1,4 @@
-# EARL: Toward Stable Reinforcement Learning throughEvolutionary Algorithms
+# EARL: Toward Stable Reinforcement Learning through Evolutionary Algorithms
 
 ## Abstract
 
