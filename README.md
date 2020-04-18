@@ -18,14 +18,15 @@ Deep reinforcement learning (RL) has experienced tremendous growth in the past f
 
 The graphs which correspond to the results of this work are documented below.
 
-#### Comparison Against EC and RL Baselines
-
 <img src="graphics/baseline.png"/>
-
-#### Comparison of Ensemble Strategies vs. 1-Elite Strategy
+As shown, though the A2C algorithm is able to solve the environment faster on average, the EARL agent
+is able to solve the environment with a tighter standard deviation than both the A2C and CGP baselines.
 
 <img src="graphics/ensemble.png"/>
-
-#### Ablation Study of Mutation / Recombination Methods
+This demonstrates that the weight voting mechanism is able to out perform the 1-elite strategy. In
+constrast, the softmax ensemble approach does not surpass the 1-elite strategy in final performance.
 
 <img src="graphics/ablation.png"/>
+Here we see that the ablations of various mutation and recombination methods do not have significant
+effect on the final performance or stability of agents during training. In particular, the mean
+recombination strategy has high overlap with the unmodified base agent.
