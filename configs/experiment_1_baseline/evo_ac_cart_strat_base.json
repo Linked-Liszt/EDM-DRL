@@ -3,16 +3,16 @@
         "timesteps": 100000,
         "num_runs": 30,
         "env": "CartPole-v1",
-        "log_name": "evo_ac_cart_strat_weightedvote",
+        "log_name": "weightedvote",
         "log_run": false,
         "print_interval": 1,
         "log_interval": 2000,
-        "log_path": "checkpoints/evo_ac_cart_strats",
+        "log_path": "results/experiment_1_baseline",
         "test_strat": "weightedvote"
     },
 
     "evo_ac": {
-        "log_path": "output_nets/ant",
+        
         "pop_size": 10,
         "value_coeff": 0.5,
         "entropy_coeff": 0.05,
