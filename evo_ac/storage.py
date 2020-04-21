@@ -1,11 +1,9 @@
 import numpy as np
 import torch
 import torch.nn as nn
-# TODO: Consider refactor to functional versions
 import torch.nn.functional as F
 
 
-# TODO: Handle variable episode sizes
 class EvoACStorage(object):
     def __init__(self, pop_size, config):
         """
@@ -68,7 +66,6 @@ class EvoACStorage(object):
                 self.discounted_rewards[pop_idx].insert(0, reward)
     
     def get_loss(self):
-        # TODO: Double check sequencing
         self._discount_rewards()
         value_losses = []
         policy_losses = []

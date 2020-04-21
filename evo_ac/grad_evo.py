@@ -16,11 +16,16 @@ class EvoACEvoAlg(object):
         self.lr_decay = self.evo_config['lr_decay']
         self.mut_scale = self.evo_config['mut_scale'] #0.5
 
+        if 'mutation_type' not in self.evo_config:
+            self.evo_config['mutation_type'] = 'gauss'
+
         num_children = 0
         if self.evo_config['hold_elite']:
             num_children += 1
         num_children += sum(self.num_mutate)
-        num_children += self.evo_config["mate_num"]
+
+        if "mate_num" in self.evo_config:
+            num_children += self.evo_config["mate_num"]
 
         if num_children != self.evo_config['pop_size']:
             raise RuntimeError(f"Number children ({num_children}) created does" +
@@ -70,14 +75,13 @@ class EvoACEvoAlg(object):
                 next_gen.append(child)
 
 
-            #TODO: elegently handle mating option
-            """
-            self.select_mate_parents()
-            parent_combs = combinations([0, 1, 2, 3], 2)
-            for mate_count in range(self.evo_config['mate_num']):
-                parents = next(parent_combs)
-                next_gen.append(self.mate_avg(parents[0], parents[1]))
-            """
+            if "mate_num" in self.evo_config:
+                self.select_mate_parents()
+                parent_combs = combinations([0, 1, 2, 3], 2)
+                for mate_count in range(self.evo_config['mate_num']):
+                    parents = next(parent_combs)
+                    next_gen.append(self.mate_avg(parents[0], parents[1]))
+
         self.params = next_gen
         return next_gen
     
