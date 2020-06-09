@@ -8,6 +8,13 @@ from evo_ac.logger import EvoACLogger
 import scipy.special as sps
 
 class EvoACRunner(object):
+    """
+    This class is the primary coordinator of the program.
+    Data passing and the primary control loops are in here. 
+
+    Params:
+        config: (dict): the experiment configuration
+    """
     def __init__(self, config):
         self.config = config
         self.config_evo = config['evo_ac']
@@ -26,6 +33,9 @@ class EvoACRunner(object):
 
         
     def train(self):
+        """
+        The primary loop of the program. Runs the whole experiment.
+        """
         for run_idx in range(self.config_exp['num_runs']):
             self.reset_experiment()
             self.timesteps = 0
@@ -81,6 +91,10 @@ class EvoACRunner(object):
 
 
     def update_evo_ac(self):
+        """
+        Performs a full parameter update based on the previous accumulated 
+        experiences in the stoarage module. 
+        """
         self.model.opt.zero_grad()
         loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
         loss.backward()
@@ -94,6 +108,9 @@ class EvoACRunner(object):
             self.new_pop = self.evo.create_new_pop()
 
     def reset_experiment(self):
+        """
+        Sets up the experiment for a new run. Rests env, storage, model. 
+        """
         obs_size = np.prod(np.shape(self.env.observation_space))
         num_pop = self.config_evo['pop_size']
         max_ep_steps = self.env._max_episode_steps
@@ -108,6 +125,13 @@ class EvoACRunner(object):
         self.evo.set_params(self.model.extract_params())
 
     def test_algorithm(self):
+        """
+        Runs a test set of 100 rollouts on the current model. 
+        No data is stored for learning. At test time, the actions are 
+        ensembled together. 
+
+        Returns: the mean score/fitness of the 100 runs
+        """
         with torch.no_grad():
             fitnesses = []
 
@@ -124,6 +148,15 @@ class EvoACRunner(object):
             return np.mean(fitnesses)
 
     def get_test_action(self, obs):
+        """
+        Performs the ensemble (as defined in configuration).
+        Used in testing. 
+
+        Params:
+            obs: (np array): the environment observation
+        
+        Returns: action (int): the action to take
+        """
         obs = self.storage.obs2tensor(obs)
         fitnesses = self.storage.fitnesses
         if self.config_exp['test_strat'] == 'best':
