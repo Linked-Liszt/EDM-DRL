@@ -7,6 +7,13 @@ from itertools import combinations
 
 class EvoACEvoAlg(object):
     def __init__(self, config_dict):
+        """
+        This class handles the evolutionary aspects of the hybrid algorithm. 
+        It communicates with the model class through weight and gradient data. 
+
+        params:
+            config_dict: The experiment config
+        """
         self.evo_config = config_dict['evo_ac']
         self.net_config = config_dict['neural_net']
 
@@ -40,7 +47,11 @@ class EvoACEvoAlg(object):
     def set_fitnesses(self, fitnesses):
         self.fitnesses = np.array(fitnesses)
     
-    def select_parents(self):
+    def _select_parents(self):
+        """
+        Create a list of parents based of the fitnesses of 
+        the population members. 
+        """
         argsorted = np.argsort(-self.fitnesses)
         self.parent_params = []
         self.parent_grads = []
@@ -49,7 +60,7 @@ class EvoACEvoAlg(object):
             self.parent_params.append(copy.deepcopy(self.params[pop_idx]))
             self.parent_grads.append(copy.deepcopy(self.grads[pop_idx]))
     
-    def select_mate_parents(self):
+    def _select_mate_parents(self):
         argsorted = np.argsort(-self.fitnesses)
         self.m_parent_params = []
         self.m_parent_grads = []
@@ -59,7 +70,12 @@ class EvoACEvoAlg(object):
             self.m_parent_grads.append(copy.deepcopy(self.grads[pop_idx]))
     
     def create_new_pop(self):
-        self.select_parents()
+        """
+        Mate and mutate the next generation of members. 
+
+        Returns: the parameters of the next generation. 
+        """
+        self._select_parents()
         next_gen = []
         if self.evo_config['hold_elite']:
             next_gen.append(self.parent_params[0])
@@ -71,22 +87,22 @@ class EvoACEvoAlg(object):
                 params = self.parent_params[parent_idx]
                 grads = self.parent_grads[parent_idx]
                 for i in range(len(params)):
-                    child.append(self.mutate(params[i], grads[i]))
+                    child.append(self._mutate(params[i], grads[i]))
                 next_gen.append(child)
 
 
             if "mate_num" in self.evo_config:
-                self.select_mate_parents()
+                self._select_mate_parents()
                 parent_combs = combinations([0, 1, 2, 3], 2)
                 for mate_count in range(self.evo_config['mate_num']):
                     parents = next(parent_combs)
-                    next_gen.append(self.mate_avg(parents[0], parents[1]))
+                    next_gen.append(self._mate_avg(parents[0], parents[1]))
 
         self.params = next_gen
         return next_gen
     
 
-    def mutate(self, param, grad):
+    def _mutate(self, param, grad):
         learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
         adjusted_grad = learning_rate * grad
 
@@ -103,7 +119,7 @@ class EvoACEvoAlg(object):
             dist = torch.distributions.uniform.Uniform(-mutation_amount, mutation_amount)
             return locs + dist.sample()
 
-    def mate_avg(self, parent_1_idx, parent_2_idx):
+    def _mate_avg(self, parent_1_idx, parent_2_idx):
         learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
         child = []
         for param_1, grad_1, param_2, grad_2 in zip(self.m_parent_params[parent_1_idx], self.m_parent_grads[parent_1_idx],
@@ -116,7 +132,7 @@ class EvoACEvoAlg(object):
         
         return child
 
-    def mate_mask(self, parent_1_idx, parent_2_idx):
+    def _mate_mask(self, parent_1_idx, parent_2_idx):
         learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
         child = []
         for param_1, grad_1, param_2, grad_2 in zip(self.m_parent_params[parent_1_idx], self.m_parent_grads[parent_1_idx],

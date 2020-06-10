@@ -37,7 +37,7 @@ class EvoACRunner(object):
         The primary loop of the program. Runs the whole experiment.
         """
         for run_idx in range(self.config_exp['num_runs']):
-            self.reset_experiment()
+            self._reset_experiment()
             self.timesteps = 0
             self.stop_counter = 0
             self.last_log = -9999999
@@ -48,10 +48,10 @@ class EvoACRunner(object):
                 for pop_idx in range(self.config_evo['pop_size']):
                     self._run_episode(pop_idx)
                 
-                self.update_evo_ac()
+                self._update_evo_ac()
 
                 if self.timesteps - self.last_log >= self.config_exp['log_interval'] or self.timesteps > self.config_exp['timesteps']:
-                    test_fit = self.test_algorithm()
+                    test_fit = self._test_algorithm()
 
                     self.logger.save_fitnesses(self.model, test_fit, self.storage.fitnesses, self.policy_loss_log, 
                                                 self.value_loss_log, self.gen_idx, self.timesteps)
@@ -96,7 +96,7 @@ class EvoACRunner(object):
         self.storage.insert_fitness(pop_idx, fitness)
 
 
-    def update_evo_ac(self):
+    def _update_evo_ac(self):
         """
         Performs a full parameter update based on the previous accumulated 
         experiences in the stoarage module. 
@@ -113,7 +113,7 @@ class EvoACRunner(object):
         with torch.no_grad():
             self.new_pop = self.evo.create_new_pop()
 
-    def reset_experiment(self):
+    def _reset_experiment(self):
         """
         Sets up the experiment for a new run. Rests env, storage, model. 
         """
@@ -130,7 +130,7 @@ class EvoACRunner(object):
         self.evo = EvoACEvoAlg(self.config)
         self.evo.set_params(self.model.extract_params())
 
-    def test_algorithm(self):
+    def _test_algorithm(self):
         """
         Runs a test set of 100 rollouts on the current model. 
         No data is stored for learning. At test time, the actions are 
@@ -145,7 +145,7 @@ class EvoACRunner(object):
                 fitness = 0
                 obs = self.test_env.reset()
                 while True:
-                    action = self.get_test_action(obs)
+                    action = self._get_test_action(obs)
                     obs, rewards, done, info = self.test_env.step(action)
                     fitness += rewards
                     if done:
@@ -153,7 +153,7 @@ class EvoACRunner(object):
                 fitnesses.append(fitness)
             return np.mean(fitnesses)
 
-    def get_test_action(self, obs):
+    def _get_test_action(self, obs):
         """
         Performs the ensemble (as defined in configuration).
         Used in testing. 
