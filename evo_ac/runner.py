@@ -46,26 +46,7 @@ class EvoACRunner(object):
                 self.storage.reset_storage()
 
                 for pop_idx in range(self.config_evo['pop_size']):
-                    obs = self.env.reset()
-
-                    fitness = 0
-
-                    while True:
-
-                        action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs), pop_idx)
-
-                        self.timesteps += 1
-
-                        obs, reward, done, info = self.env.step(action.cpu().numpy())
-                        fitness += reward
-
-                        self.storage.insert(pop_idx, reward, action, log_p_a, value, entropy)
-
-                    
-                        if done:
-                            break
-                    
-                    self.storage.insert_fitness(pop_idx, fitness)
+                    self._run_episode(pop_idx)
                 
                 self.update_evo_ac()
 
@@ -82,12 +63,37 @@ class EvoACRunner(object):
 
                 self.model.insert_params(self.new_pop)
 
-
                 if self.timesteps > self.config_exp['timesteps']:
                     break
 
             self.logger.end_run()
         self.logger.end_experiment()
+
+    def _run_episode(self, pop_idx):
+        """
+        Runs a training episode on the specified population member. 
+
+        Params:
+            pop_idx: the index of the population member
+        """
+        obs = self.env.reset()
+        fitness = 0
+
+        while True:
+
+            action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs), pop_idx)
+
+            self.timesteps += 1
+
+            obs, reward, done, info = self.env.step(action.cpu().numpy())
+            fitness += reward
+
+            self.storage.insert(pop_idx, reward, action, log_p_a, value, entropy)
+
+            if done:
+                break
+
+        self.storage.insert_fitness(pop_idx, fitness)
 
 
     def update_evo_ac(self):
