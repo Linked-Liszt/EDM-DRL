@@ -7,12 +7,6 @@ import torch.nn.functional as F
 class EvoACStorage(object):
     def __init__(self, pop_size, config):
         """
-
-        :param max_episode_steps: number of steps after the policy gets updated
-        :param num_pop: number of environments to train on parallel
-        :param obs_shape: shape of a frame as a tuple
-        :param n_stack: number of frames concatenated
-        :param is_cuda: flag whether to use CUDA
         """
         super().__init__()
 
@@ -41,8 +35,6 @@ class EvoACStorage(object):
         
 
     def obs2tensor(self, obs):
-        # 1. reorder dimensions for nn.Conv2d (batch, ch_in, width, height)
-        # 2. convert numpy array to _normalized_ FloatTensor
         tensor = torch.from_numpy(obs.astype(np.float32))
         return tensor
 

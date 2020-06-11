@@ -8,6 +8,13 @@ from evo_ac.logger import EvoACLogger
 import scipy.special as sps
 
 class EvoACRunner(object):
+    """
+    This class is the primary coordinator of the program.
+    Data passing and the primary control loops are in here. 
+
+    Params:
+        config: (dict): the experiment configuration
+    """
     def __init__(self, config):
         self.config = config
         self.config_evo = config['evo_ac']
@@ -26,45 +33,31 @@ class EvoACRunner(object):
 
         
     def train(self):
+        """
+        The primary loop of the program. Runs the whole experiment.
+        """
         for run_idx in range(self.config_exp['num_runs']):
-            self.reset_experiment()
+            self._reset_experiment()
             self.timesteps = 0
             self.stop_counter = 0
             self.last_log = -9999999
 
             for self.gen_idx in range(10000):
-                self.storage.reset_storage()
-
+                self.storage.reset_storage() 
                 for pop_idx in range(self.config_evo['pop_size']):
-                    obs = self.env.reset()
-
-                    fitness = 0
-
-                    while True:
-
-                        action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs), pop_idx)
-
-                        self.timesteps += 1
-
-                        obs, reward, done, info = self.env.step(action.cpu().numpy())
-                        fitness += reward
-
-                        self.storage.insert(pop_idx, reward, action, log_p_a, value, entropy)
-
-                    
-                        if done:
-                            break
-                    
-                    self.storage.insert_fitness(pop_idx, fitness)
+                    self._run_episode(pop_idx)
                 
-                self.update_evo_ac()
+                self._update_evo_ac()
 
                 if self.timesteps - self.last_log >= self.config_exp['log_interval'] or self.timesteps > self.config_exp['timesteps']:
-                    test_fit = self.test_algorithm()
+                    test_fit = self._test_algorithm()
 
                     self.logger.save_fitnesses(self.model, test_fit, self.storage.fitnesses, self.policy_loss_log, 
                                                 self.value_loss_log, self.gen_idx, self.timesteps)
-                    self.logger.print_data(self.gen_idx)
+
+                    if self.gen_idx % self.config_exp['print_interval'] == 0:
+                        self.logger.print_data()
+
                     self.last_log = self.timesteps
 
                     if test_fit >= self.stop_fit:
@@ -72,15 +65,44 @@ class EvoACRunner(object):
 
                 self.model.insert_params(self.new_pop)
 
-
                 if self.timesteps > self.config_exp['timesteps']:
                     break
 
             self.logger.end_run()
         self.logger.end_experiment()
 
+    def _run_episode(self, pop_idx):
+        """
+        Runs a training episode on the specified population member. 
 
-    def update_evo_ac(self):
+        Params:
+            pop_idx: the index of the population member
+        """
+        obs = self.env.reset()
+        fitness = 0
+
+        while True:
+
+            action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs), pop_idx)
+
+            self.timesteps += 1
+
+            obs, reward, done, info = self.env.step(action.cpu().numpy())
+            fitness += reward
+
+            self.storage.insert(pop_idx, reward, action, log_p_a, value, entropy)
+
+            if done:
+                break
+
+        self.storage.insert_fitness(pop_idx, fitness)
+
+
+    def _update_evo_ac(self):
+        """
+        Performs a full parameter update based on the previous accumulated 
+        experiences in the stoarage module. 
+        """
         self.model.opt.zero_grad()
         loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
         loss.backward()
@@ -93,7 +115,10 @@ class EvoACRunner(object):
         with torch.no_grad():
             self.new_pop = self.evo.create_new_pop()
 
-    def reset_experiment(self):
+    def _reset_experiment(self):
+        """
+        Sets up the experiment for a new run. Rests env, storage, model. 
+        """
         obs_size = np.prod(np.shape(self.env.observation_space))
         num_pop = self.config_evo['pop_size']
         max_ep_steps = self.env._max_episode_steps
@@ -107,7 +132,14 @@ class EvoACRunner(object):
         self.evo = EvoACEvoAlg(self.config)
         self.evo.set_params(self.model.extract_params())
 
-    def test_algorithm(self):
+    def _test_algorithm(self):
+        """
+        Runs a test set of 100 rollouts on the current model. 
+        No data is stored for learning. At test time, the actions are 
+        ensembled together. 
+
+        Returns: the mean score/fitness of the 100 runs
+        """
         with torch.no_grad():
             fitnesses = []
 
@@ -115,7 +147,7 @@ class EvoACRunner(object):
                 fitness = 0
                 obs = self.test_env.reset()
                 while True:
-                    action = self.get_test_action(obs)
+                    action = self._get_test_action(obs)
                     obs, rewards, done, info = self.test_env.step(action)
                     fitness += rewards
                     if done:
@@ -123,7 +155,16 @@ class EvoACRunner(object):
                 fitnesses.append(fitness)
             return np.mean(fitnesses)
 
-    def get_test_action(self, obs):
+    def _get_test_action(self, obs):
+        """
+        Performs the ensemble (as defined in configuration).
+        Used in testing. 
+
+        Params:
+            obs: (np array): the environment observation
+        
+        Returns: action (int): the action to take
+        """
         obs = self.storage.obs2tensor(obs)
         fitnesses = self.storage.fitnesses
         if self.config_exp['test_strat'] == 'best':

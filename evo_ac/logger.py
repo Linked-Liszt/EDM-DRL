@@ -4,9 +4,15 @@ import copy
 import os
 from datetime import datetime
 
-NOTIFICATION_PATH = "/home/oxymoren/Desktop/rand_utils/dm_me.sh"
 
 class EvoACLogger(object):
+    """
+    Handles experiment data logging and creation of logging artifacts. 
+
+    Params:
+        config (dict): the experiment config
+
+    """
     def __init__(self, config):
 
         self.config = config
@@ -34,6 +40,11 @@ class EvoACLogger(object):
 
 
     def save_fitnesses(self, model, test_fit, fitnesses, policy_loss, value_loss, gen, timesteps):
+        """
+        Saves the fitness of a test run. Also takes some 
+        loss metrics of the last training step.
+
+        """
         data_dict = {}
         data_dict['gen'] = gen
         data_dict['timesteps'] = timesteps
@@ -51,6 +62,10 @@ class EvoACLogger(object):
             self.best_model =  copy.deepcopy(model)
 
     def end_run(self):
+        """
+        Resets internal variables to prepare for a new run. 
+        Saves previous run data. 
+        """
         self.experiment_log.append(self.run_log)
         self.run_log = []
         self.run_end_times.append(datetime.now())
@@ -59,11 +74,19 @@ class EvoACLogger(object):
         self.run_counter += 1
 
     def end_experiment(self):
+        """
+        Steps to take at the end of the experiment. 
+        For now, just data exporting. 
+        """
         self._export_data('final')
-        if 'discord_ping' in self.config_exp and self.config_exp['discord_ping']:
-            self._send_discord_notification()
         
     def _export_data(self, export_name):
+        """
+        Exports data to the log path as specified in the config. 
+        Checks for conflits. The data is exported as a pickle.
+
+        export_name (str): name of the log file to create 
+        """
         data_path = self.directory + '/' + self.name + '_' \
                 + export_name
          
@@ -82,26 +105,19 @@ class EvoACLogger(object):
         save_dict['version'] = 'v0'
         pickle.dump(save_dict, open(data_path, 'wb'))
 
-    def print_data(self, gen_idx):
-        if gen_idx % self.print_interval == 0:
-            data_dict = self.run_log[-1]
-            display_str = f"\n\nRun {self.run_counter}  Gen {gen_idx}  Timesteps {data_dict['timesteps']} \n" \
-                + f"Best: {data_dict['fit_best']}  Mean: {data_dict['fit_mean']}  Test: {data_dict['test_fit']}\n" \
-                + f"Policy Loss: {data_dict['policy_loss']:.2e}  Value Loss: {data_dict['value_loss']:.2e}\n" \
-                + f"Full: {data_dict['fit']}\n"\
-                + f"Experiment: {self.config_exp['log_name']}"
-            print(display_str)
-            
-    def _send_discord_notification(self):
-        end_time = datetime.now()
-        time_delta = end_time - self.start_time
+    def print_data(self):
+        """
+        Retrieves data from the latest log object and prints it to console. 
+        Gen idx is used to change the interval which data is printed. 
 
-        time_start_str = self.start_time.strftime("%H:%M:%S")
-        end_time_str = end_time.strftime("%H:%M:%S")
-        time_delta_str = str(time_delta)
-        command = NOTIFICATION_PATH + \
-            f' \"Experiment {self.name.rstrip("_")} has finished.' + \
-            f'//n// Time Start: {time_start_str} Time End: {end_time_str}' + \
-            f'//n// Time Δ: {time_delta_str}\"'
-        os.system(command)
-
+        Params:
+            gen_idx (int): used to determine whether to 
+        """
+        data_dict = self.run_log[-1]
+        display_str = f"\n\nRun {self.run_counter}  Gen {data_dict['gen']}  Timesteps {data_dict['timesteps']} \n" \
+            + f"Best: {data_dict['fit_best']}  Mean: {data_dict['fit_mean']}  Test: {data_dict['test_fit']}\n" \
+            + f"Policy Loss: {data_dict['policy_loss']:.2e}  Value Loss: {data_dict['value_loss']:.2e}\n" \
+            + f"Full: {data_dict['fit']}\n"\
+            + f"Experiment: {self.config_exp['log_name']}"
+        print(display_str)
+        
