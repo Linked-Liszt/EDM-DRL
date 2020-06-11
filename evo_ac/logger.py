@@ -105,13 +105,19 @@ class EvoACLogger(object):
         save_dict['version'] = 'v0'
         pickle.dump(save_dict, open(data_path, 'wb'))
 
-    def print_data(self, gen_idx):
-        if gen_idx % self.print_interval == 0:
-            data_dict = self.run_log[-1]
-            display_str = f"\n\nRun {self.run_counter}  Gen {gen_idx}  Timesteps {data_dict['timesteps']} \n" \
-                + f"Best: {data_dict['fit_best']}  Mean: {data_dict['fit_mean']}  Test: {data_dict['test_fit']}\n" \
-                + f"Policy Loss: {data_dict['policy_loss']:.2e}  Value Loss: {data_dict['value_loss']:.2e}\n" \
-                + f"Full: {data_dict['fit']}\n"\
-                + f"Experiment: {self.config_exp['log_name']}"
-            print(display_str)
-            
+    def print_data(self):
+        """
+        Retrieves data from the latest log object and prints it to console. 
+        Gen idx is used to change the interval which data is printed. 
+
+        Params:
+            gen_idx (int): used to determine whether to 
+        """
+        data_dict = self.run_log[-1]
+        display_str = f"\n\nRun {self.run_counter}  Gen {data_dict['gen']}  Timesteps {data_dict['timesteps']} \n" \
+            + f"Best: {data_dict['fit_best']}  Mean: {data_dict['fit_mean']}  Test: {data_dict['test_fit']}\n" \
+            + f"Policy Loss: {data_dict['policy_loss']:.2e}  Value Loss: {data_dict['value_loss']:.2e}\n" \
+            + f"Full: {data_dict['fit']}\n"\
+            + f"Experiment: {self.config_exp['log_name']}"
+        print(display_str)
+        

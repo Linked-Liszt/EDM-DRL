@@ -71,7 +71,8 @@ class EvoACEvoAlg(object):
     
     def create_new_pop(self):
         """
-        Mate and mutate the next generation of members. 
+        Mate and mutate the next generation of members.
+        Calls the various functions to select and perform mutation and mating. 
 
         Returns: the parameters of the next generation. 
         """
@@ -154,5 +155,5 @@ class EvoACEvoAlg(object):
         return child
     
 
-    def decary_lr(self):
+    def decay_lr(self):
         self.learning_rate = self.lr_decay * self.learning_rate

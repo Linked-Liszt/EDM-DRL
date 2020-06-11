@@ -43,8 +43,7 @@ class EvoACRunner(object):
             self.last_log = -9999999
 
             for self.gen_idx in range(10000):
-                self.storage.reset_storage()
-
+                self.storage.reset_storage() 
                 for pop_idx in range(self.config_evo['pop_size']):
                     self._run_episode(pop_idx)
                 
@@ -55,7 +54,10 @@ class EvoACRunner(object):
 
                     self.logger.save_fitnesses(self.model, test_fit, self.storage.fitnesses, self.policy_loss_log, 
                                                 self.value_loss_log, self.gen_idx, self.timesteps)
-                    self.logger.print_data(self.gen_idx)
+
+                    if self.gen_idx % self.config_exp['print_interval'] == 0:
+                        self.logger.print_data()
+
                     self.last_log = self.timesteps
 
                     if test_fit >= self.stop_fit:
