@@ -26,6 +26,7 @@ class EvoACRunner(object):
         elif self.config_exp['env'] == "LunarLander-v2":
             self.stop_fit = 200.0
             
+        self._set_device()
 
         self.env = gym.make(self.config_exp['env'])
         self.test_env = gym.make(self.config_exp['env'])
@@ -183,3 +184,11 @@ class EvoACRunner(object):
                 action_votes[mod_action] += weight
             action = np.argmax(action_votes)
         return action
+    
+    def _set_device(self):
+        if torch.cuda.is_available():
+            self.device = torch.device('cuda:0')
+            print("Running on GPU")
+        else:
+            self.device = torch.device('cpu')
+            print("Running on CPU")
