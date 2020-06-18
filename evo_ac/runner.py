@@ -186,9 +186,9 @@ class EvoACRunner(object):
         return action
     
     def _set_device(self):
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda:0')
-            print("Running on GPU")
-        else:
+        if not torch.cuda.is_available() or ('force_cpu' in self.config_exp and self.config_exp['force_cpu']):
             self.device = torch.device('cpu')
             print("Running on CPU")
+        else:
+            self.device = torch.device('cuda:0')
+            print("Running on GPU")
