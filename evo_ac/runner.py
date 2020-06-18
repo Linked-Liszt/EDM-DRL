@@ -83,8 +83,8 @@ class EvoACRunner(object):
         fitness = 0
 
         while True:
-
-            action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs), pop_idx)
+            
+            action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs).to(self.device), pop_idx)
 
             self.timesteps += 1
 
@@ -128,8 +128,8 @@ class EvoACRunner(object):
 
         print("NEW RUN")
 
-        self.storage = EvoACStorage(num_pop, self.config)
-        self.model = EvoACModel(self.config)
+        self.storage = EvoACStorage(num_pop, self.config, self.device)
+        self.model = EvoACModel(self.config, self.device).to(self.device)
         self.evo = EvoACEvoAlg(self.config)
         self.evo.set_params(self.model.extract_params())
 
@@ -166,7 +166,7 @@ class EvoACRunner(object):
         
         Returns: action (int): the action to take
         """
-        obs = self.storage.obs2tensor(obs)
+        obs = self.storage.obs2tensor(obs).to(self.device)
         fitnesses = self.storage.fitnesses
         if self.config_exp['test_strat'] == 'best':
             best_pop = np.argmax(fitnesses)

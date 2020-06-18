@@ -16,8 +16,9 @@ class EvoACModel(nn.Module):
 
     TODO: Add ability to contain lstm and RNN layers. 
     """
-    def __init__(self, config_dict):
+    def __init__(self, config_dict, device):
         super().__init__()
+        self.device = device
         self.evo_config = config_dict['evo_ac']
         self.net_config = config_dict['neural_net']
         
@@ -49,7 +50,7 @@ class EvoACModel(nn.Module):
             output_ml.append(self._add_layer(
                 layer['type'], 
                 layer['params'],
-                layer['kwargs']))
+                layer['kwargs'])).to(self.device)
         return output_ml
 
 
