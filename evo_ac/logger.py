@@ -100,6 +100,7 @@ class EvoACLogger(object):
 
         save_dict = {}
         save_dict['start_time'] = self.start_time
+        save_dict['end_time'] = datetime.now()
         save_dict['env'] = self.env
         save_dict['best_nn'] = self.best_model
         save_dict['experiment_log'] = self.experiment_log
