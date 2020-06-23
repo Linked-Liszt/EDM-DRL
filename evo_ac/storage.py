@@ -4,11 +4,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class EvoACStorage(object):
-    def __init__(self, pop_size, config):
+class EvoACStorage():
+    def __init__(self, pop_size, config, device):
         """
         """
         super().__init__()
+        self.device = device
 
         self.pop_size = pop_size
 
@@ -68,7 +69,7 @@ class EvoACStorage(object):
 
                 advantage = reward - value.item()
 
-                value_losses.append(F.smooth_l1_loss(value, torch.tensor([reward])))
+                value_losses.append(F.smooth_l1_loss(value, torch.tensor([reward]).to(self.device)))
 
                 policy_losses.append((-self.log_probs[pop_idx][step_idx] * advantage).mean())
 

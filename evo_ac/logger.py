@@ -36,7 +36,10 @@ class EvoACLogger(object):
         self.run_end_times.append(self.start_time)
 
         if not os.path.exists(self.directory):
-            os.makedirs(self.directory)
+            try:
+                os.makedirs(self.directory)
+            except OSError:
+                print("WARNING: Unable to create log directory")
 
 
     def save_fitnesses(self, model, test_fit, fitnesses, policy_loss, value_loss, gen, timesteps):
@@ -97,6 +100,7 @@ class EvoACLogger(object):
 
         save_dict = {}
         save_dict['start_time'] = self.start_time
+        save_dict['end_time'] = datetime.now()
         save_dict['env'] = self.env
         save_dict['best_nn'] = self.best_model
         save_dict['experiment_log'] = self.experiment_log
