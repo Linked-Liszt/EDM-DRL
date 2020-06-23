@@ -2,7 +2,7 @@ import numpy as np
 import gym
 import json
 import sys
-from evo_ac.runner import EvoACRunner
+from earl.runner import EvoACRunner
 import matplotlib.pyplot as plt
 import random
 
@@ -10,12 +10,12 @@ import random
 # Search params adaped from https://arxiv.org/pdf/1912.02877.pdf
 
 if __name__ == '__main__':
-    
+
     config_path = sys.argv[1]
     with open(config_path, 'r') as config_file:
         config_dict = json.load(config_file)
 
-    
+
 
 
     for hparam_run_idx in range(300):
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
 
         activation_function = random.choice(['ReLU', 'Tanh'])
-        
+
         config_dict['experiment']['gamma'] = random.choice([0.98, 0.99, 0.995, 0.999])
         config_dict['evo_ac']['entropy_coeff'] = random.choice([0.0, 0.01, 0.02, 0.05, 0.1])
         config_dict['evo_ac']['value_coeff'] = random.choice([0.1, 0.2, 0.5, 1.0])
@@ -46,26 +46,26 @@ if __name__ == '__main__':
             shared = [
                 {
                     "type": "Linear",
-                    "params": [input_size, size_set[0]], 
+                    "params": [input_size, size_set[0]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 }
                 ]
             policy = [
                 {
                     "type": "Linear",
-                    "params": [size_set[0], output_size], 
+                    "params": [size_set[0], output_size],
                     "kwargs": {"bias":True}
                 }
                 ]
             value = [
                 {
                     "type": "Linear",
-                    "params": [size_set[0], 1], 
+                    "params": [size_set[0], 1],
                     "kwargs": {"bias":True}
                 }
                 ]
@@ -74,36 +74,36 @@ if __name__ == '__main__':
             shared = [
                 {
                     "type": "Linear",
-                    "params": [input_size, size_set[0]], 
+                    "params": [input_size, size_set[0]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[0], size_set[1]], 
+                    "params": [size_set[0], size_set[1]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 }
                 ]
             policy = [
                 {
                     "type": "Linear",
-                    "params": [size_set[1], output_size], 
+                    "params": [size_set[1], output_size],
                     "kwargs": {"bias":True}
                 }
                 ]
             value = [
                 {
                     "type": "Linear",
-                    "params": [size_set[1], 1], 
+                    "params": [size_set[1], 1],
                     "kwargs": {"bias":True}
                 }
                 ]
@@ -112,46 +112,46 @@ if __name__ == '__main__':
             shared = [
                 {
                     "type": "Linear",
-                    "params": [input_size, size_set[0]], 
+                    "params": [input_size, size_set[0]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 }
                 ]
             policy = [
                 {
                     "type": "Linear",
-                    "params": [size_set[0], size_set[1]], 
+                    "params": [size_set[0], size_set[1]],
                     "kwargs": {"bias":True}
                 },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[1], output_size], 
+                    "params": [size_set[1], output_size],
                     "kwargs": {"bias":True}
                 }
                 ]
             value = [
                 {
                     "type": "Linear",
-                    "params": [size_set[0], size_set[1]], 
+                    "params": [size_set[0], size_set[1]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[1], 1], 
+                    "params": [size_set[1], 1],
                     "kwargs": {"bias":True}
                 }
                 ]
@@ -160,22 +160,22 @@ if __name__ == '__main__':
             shared = [
                 {
                     "type": "Linear",
-                    "params": [input_size, size_set[0]], 
+                    "params": [input_size, size_set[0]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[0], size_set[1]], 
+                    "params": [size_set[0], size_set[1]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
 
@@ -183,34 +183,34 @@ if __name__ == '__main__':
             policy = [
                 {
                     "type": "Linear",
-                    "params": [size_set[1], size_set[1]], 
+                    "params": [size_set[1], size_set[1]],
                     "kwargs": {"bias":True}
                 },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[1], output_size], 
+                    "params": [size_set[1], output_size],
                     "kwargs": {"bias":True}
                 }
                 ]
             value = [
                 {
                     "type": "Linear",
-                    "params": [size_set[1], size_set[1]], 
+                    "params": [size_set[1], size_set[1]],
                     "kwargs": {"bias":True}
-                }, 
+                },
                 {
                     "type": activation_function,
-                    "params": [], 
+                    "params": [],
                     "kwargs": {}
                 },
                 {
                     "type": "Linear",
-                    "params": [size_set[1], 1], 
+                    "params": [size_set[1], 1],
                     "kwargs": {"bias":True}
                 }
             ]
@@ -218,7 +218,7 @@ if __name__ == '__main__':
         config_dict['neural_net']['shared'] = shared
         config_dict['neural_net']['policy'] = policy
         config_dict['neural_net']['value'] = value
-        
-        
+
+
         runner = EvoACRunner(config_dict)
         runner.train()
