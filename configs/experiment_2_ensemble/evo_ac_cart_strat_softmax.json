@@ -1,69 +1,89 @@
 {
-    "experiment": {
-        "timesteps": 100000,
-        "num_runs": 30,
-        "env": "CartPole-v1",
-        "log_name": "softmax",
-        "log_run": false,
-        "print_interval": 1,
-        "log_interval": 2000,
-        "log_path": "results/experiment_2_ensemble",
-        "test_strat": "softmax"
-    },
-
-    "evo_ac": {
-        
-        "pop_size": 10,
-        "value_coeff": 0.5,
-        "entropy_coeff": 0.05,
-        "hold_elite":true,
-        "recomb_nums": [5,3,1],
-        "learning_rate": [5e-5, 5e-5],
-        "mut_scale":  0.0,
-        "lr_decay": 0.98
-
-    },
-
-    "neural_net": {
-        "learning_rate":3e-2,
-        "shared": [
-            {
-                "type": "Linear",
-                "params": [4, 128], 
-                "kwargs": {"bias":true}
-            }, 
-            {
-                "type": "ReLU",
-                "params": [], 
-                "kwargs": {}
-            }
-
+  "evo_ac": {
+    "entropy_coeff": 0.05,
+    "hold_elite": true,
+    "learning_rate": [
+      5e-05,
+      5e-05
+    ],
+    "lr_decay": 0.98,
+    "mut_scale": 0.0,
+    "pop_size": 10,
+    "recomb_nums": [
+      5,
+      3,
+      1
+    ],
+    "value_coeff": 0.5
+  },
+  "experiment": {
+    "env": "CartPole-v1",
+    "log_interval": 2000,
+    "log_name": "softmax",
+    "log_path": "results/experiment_2_ensemble",
+    "log_run": false,
+    "num_runs": 30,
+    "print_interval": 1,
+    "test_strat": "softmax",
+    "timesteps": 100000
+  },
+  "neural_net": {
+    "learning_rate": 0.03,
+    "policy": [
+      {
+        "kwargs": {
+          "bias": true
+        },
+        "params": [
+          128,
+          128
         ],
-        "policy":
-        [
-            {
-                "type": "Linear",
-                "params": [128, 128], 
-                "kwargs": {"bias":true}
-            },
-            {
-                "type": "ReLU",
-                "params": [], 
-                "kwargs": {}
-            },
-            {
-                "type": "Linear",
-                "params": [128, 2], 
-                "kwargs": {"bias":true}
-            }
+        "type": "Linear"
+      },
+      {
+        "kwargs": {},
+        "params": [],
+        "type": "ReLU"
+      },
+      {
+        "kwargs": {
+          "bias": true
+        },
+        "params": [
+          128,
+          2
         ],
-        "value": [
-            {
-                "type": "Linear",
-                "params": [128, 1], 
-                "kwargs": {"bias":true}
-            }
-        ]
-        
-    }
+        "type": "Linear"
+      }
+    ],
+    "shared": [
+      {
+        "kwargs": {
+          "bias": true
+        },
+        "params": [
+          4,
+          128
+        ],
+        "type": "Linear"
+      },
+      {
+        "kwargs": {},
+        "params": [],
+        "type": "ReLU"
+      }
+    ],
+    "value": [
+      {
+        "kwargs": {
+          "bias": true
+        },
+        "params": [
+          128,
+          1
+        ],
+        "type": "Linear"
+      }
+    ]
+  }
 }

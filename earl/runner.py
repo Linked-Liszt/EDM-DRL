@@ -1,16 +1,16 @@
 import gym
 import numpy as np
-from evo_ac.model import EvoACModel
+from earl.model import EvoACModel
 import torch
-from evo_ac.storage import EvoACStorage
-from evo_ac.grad_evo import EvoACEvoAlg
-from evo_ac.logger import EvoACLogger
+from earl.storage import EvoACStorage
+from earl.ea import EA
+from earl.logger import EvoACLogger
 import scipy.special as sps
 
 class EvoACRunner(object):
     """
     This class is the primary coordinator of the program.
-    Data passing and the primary control loops are in here. 
+    Data passing and the primary control loops are in here.
 
     Params:
         config: (dict): the experiment configuration
@@ -25,14 +25,14 @@ class EvoACRunner(object):
             self.stop_fit = 475.0
         elif self.config_exp['env'] == "LunarLander-v2":
             self.stop_fit = 200.0
-            
+
         self._set_device()
 
         self.env = gym.make(self.config_exp['env'])
         self.test_env = gym.make(self.config_exp['env'])
         self.logger = EvoACLogger(config)
 
-        
+
     def train(self):
         """
         The primary loop of the program. Runs the whole experiment.
@@ -44,16 +44,16 @@ class EvoACRunner(object):
             self.last_log = -9999999
 
             for self.gen_idx in range(10000):
-                self.storage.reset_storage() 
+                self.storage.reset_storage()
                 for pop_idx in range(self.config_evo['pop_size']):
                     self._run_episode(pop_idx)
-                
+
                 self._update_evo_ac()
 
                 if self.timesteps - self.last_log >= self.config_exp['log_interval'] or self.timesteps > self.config_exp['timesteps']:
                     test_fit = self._test_algorithm()
 
-                    self.logger.save_fitnesses(self.model, test_fit, self.storage.fitnesses, self.policy_loss_log, 
+                    self.logger.save_fitnesses(self.model, test_fit, self.storage.fitnesses, self.policy_loss_log,
                                                 self.value_loss_log, self.gen_idx, self.timesteps)
 
                     if self.gen_idx % self.config_exp['print_interval'] == 0:
@@ -74,7 +74,7 @@ class EvoACRunner(object):
 
     def _run_episode(self, pop_idx):
         """
-        Runs a training episode on the specified population member. 
+        Runs a training episode on the specified population member.
 
         Params:
             pop_idx: the index of the population member
@@ -83,7 +83,7 @@ class EvoACRunner(object):
         fitness = 0
 
         while True:
-            
+
             action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs).to(self.device), pop_idx)
 
             self.timesteps += 1
@@ -101,14 +101,14 @@ class EvoACRunner(object):
 
     def _update_evo_ac(self):
         """
-        Performs a full parameter update based on the previous accumulated 
-        experiences in the stoarage module. 
+        Performs a full parameter update based on the previous accumulated
+        experiences in the stoarage module.
         """
         self.model.opt.zero_grad()
         loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
         loss.backward()
         self.evo.set_grads(self.model.extract_grads())
-        
+
         self.model.opt.step()
 
         self.evo.set_fitnesses(self.storage.fitnesses)
@@ -118,7 +118,7 @@ class EvoACRunner(object):
 
     def _reset_experiment(self):
         """
-        Sets up the experiment for a new run. Rests env, storage, model. 
+        Sets up the experiment for a new run. Rests env, storage, model.
         """
         obs_size = np.prod(np.shape(self.env.observation_space))
         num_pop = self.config_evo['pop_size']
@@ -130,14 +130,14 @@ class EvoACRunner(object):
 
         self.storage = EvoACStorage(num_pop, self.config, self.device)
         self.model = EvoACModel(self.config, self.device).to(self.device)
-        self.evo = EvoACEvoAlg(self.config)
+        self.evo = EA(self.config)
         self.evo.set_params(self.model.extract_params())
 
     def _test_algorithm(self):
         """
-        Runs a test set of 100 rollouts on the current model. 
-        No data is stored for learning. At test time, the actions are 
-        ensembled together. 
+        Runs a test set of 100 rollouts on the current model.
+        No data is stored for learning. At test time, the actions are
+        ensembled together.
 
         Returns: the mean score/fitness of the 100 runs
         """
@@ -159,11 +159,11 @@ class EvoACRunner(object):
     def _get_test_action(self, obs):
         """
         Performs the ensemble (as defined in configuration).
-        Used in testing. 
+        Used in testing.
 
         Params:
             obs: (np array): the environment observation
-        
+
         Returns: action (int): the action to take
         """
         obs = self.storage.obs2tensor(obs).to(self.device)
@@ -184,7 +184,7 @@ class EvoACRunner(object):
                 action_votes[mod_action] += weight
             action = np.argmax(action_votes)
         return action
-    
+
     def _set_device(self):
         if not torch.cuda.is_available() or ('force_cpu' in self.config_exp and self.config_exp['force_cpu']):
             self.device = torch.device('cpu')
