@@ -13,10 +13,10 @@ class EvoACStorage():
 
         self.pop_size = pop_size
 
-        self.evo_ac_config = config['evo_ac']
+        self.earl_config = config['earl']
 
-        self.value_coeff = self.evo_ac_config['value_coeff']
-        self.entropy_coeff = self.evo_ac_config['entropy_coeff']
+        self.value_coeff = self.earl_config['value_coeff']
+        self.entropy_coeff = self.earl_config['entropy_coeff']
 
         if 'gamma' not in config['experiment']:
             self.reward_discount = 0.99
@@ -33,13 +33,13 @@ class EvoACStorage():
         self.rewards = [[] for _ in range(self.pop_size)]
         self.values = [[] for _ in range(self.pop_size)]
         self.fitnesses = [0] * self.pop_size
-        
+
 
     def obs2tensor(self, obs):
         tensor = torch.from_numpy(obs.astype(np.float32))
         return tensor
 
-    
+
     def insert(self, pop_idx, reward, action, log_prob, value, entropy):
         self.rewards[pop_idx].append(reward)
         self.actions[pop_idx].append(action)
@@ -49,7 +49,7 @@ class EvoACStorage():
 
     def insert_fitness(self, pop_idx, fitness):
         self.fitnesses[pop_idx] = fitness
-    
+
     def _discount_rewards(self):
         self.discounted_rewards = [[] for _ in range(self.pop_size)]
         for pop_idx in range(self.pop_size):
@@ -57,7 +57,7 @@ class EvoACStorage():
             for r in self.rewards[pop_idx][::-1]:
                 reward = r + self.reward_discount * reward
                 self.discounted_rewards[pop_idx].insert(0, reward)
-    
+
     def get_loss(self):
         self._discount_rewards()
         value_losses = []
@@ -78,6 +78,6 @@ class EvoACStorage():
 
         policy_loss_log = all_policy_loss.item()
         value_loss_log = all_value_loss.item()
-    
+
         loss = (all_policy_loss * self.value_coeff) + all_value_loss - (self.entropy_coeff * self.entropies)
         return loss, policy_loss_log, value_loss_log
