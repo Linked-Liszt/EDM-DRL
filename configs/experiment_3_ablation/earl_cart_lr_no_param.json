@@ -1,10 +1,10 @@
 {
-  "evo_ac": {
+  "earl": {
     "entropy_coeff": 0.05,
     "hold_elite": true,
-    "learning_rate": [
-      5e-05,
-      5e-05
+    "lr": [
+      4e-05,
+      4e-05
     ],
     "lr_decay": 0.98,
     "mut_scale": 0.0,
@@ -19,8 +19,8 @@
   "experiment": {
     "env": "CartPole-v1",
     "log_interval": 2000,
-    "log_name": "weightedvote",
-    "log_path": "results/experiment_2_ensemble",
+    "log_name": "earl_cart_lr_no_param",
+    "log_path": "results/experiment_3_ablation",
     "log_run": false,
     "num_runs": 30,
     "print_interval": 1,
@@ -28,7 +28,7 @@
     "timesteps": 100000
   },
   "neural_net": {
-    "learning_rate": 0.03,
+    "lr": 0.03,
     "policy": [
       {
         "kwargs": {
