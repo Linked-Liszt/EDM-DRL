@@ -31,7 +31,6 @@ recombination strategy has high overlap with the unmodified base agent.
   * scipy
   * torch
 
-
 ## Usage
 
 ### Analysis Scripts
@@ -59,6 +58,7 @@ recombination strategy has high overlap with the unmodified base agent.
 
 
 ## Project Structure
+
 * /configs
   * Contains all of the configuration and hyperparameter details. Organized by experiment.
 * /earl
