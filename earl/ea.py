@@ -14,12 +14,12 @@ class EA(object):
     params:
       config: The experiment config
     """
-    self.evo_config = config['evo_ac']
+    self.evo_config = config['earl']
     self.net_config = config['neural_net']
 
     # CONSTANTS
     self.num_mutate = self.evo_config['recomb_nums'] # [4,3,2,1]
-    self.learning_rate = self.evo_config['learning_rate'] #1e-3
+    self.lr = self.evo_config['lr'] #1e-3
     self.lr_decay = self.evo_config['lr_decay']
     self.mut_scale = self.evo_config['mut_scale'] #0.5
 
@@ -97,8 +97,8 @@ class EA(object):
     return next_gen
 
   def _mutate(self, param, grad):
-    learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
-    adjusted_grad = learning_rate * grad
+    lr = random.uniform(self.lr[0], self.lr[1])
+    adjusted_grad = lr * grad
     if self.evo_config['mutation_type'] == "gauss":
       locs = param - adjusted_grad
       scales = torch.abs(adjusted_grad) * self.mut_scale
@@ -111,19 +111,19 @@ class EA(object):
       return locs + dist.sample()
 
   def _mate_avg(self, parent_1_idx, parent_2_idx):
-    learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
+    lr = random.uniform(self.lr[0], self.lr[1])
     child = []
     for param_1, grad_1, param_2, grad_2 in zip(self.m_parent_params[parent_1_idx],
                                                 self.m_parent_grads[parent_1_idx],
                                                 self.m_parent_params[parent_2_idx],
                                                 self.m_parent_grads[parent_2_idx]):
-      params_1 = param_1 - (grad_1 * learning_rate)
-      params_2 = param_2 - (grad_2 * learning_rate)
+      params_1 = param_1 - (grad_1 * lr)
+      params_2 = param_2 - (grad_2 * lr)
       child.append(((params_1 + params_2)/2))
     return child
 
   def _mate_mask(self, parent_1_idx, parent_2_idx):
-    learning_rate = random.uniform(self.learning_rate[0], self.learning_rate[1])
+    lr = random.uniform(self.lr[0], self.lr[1])
     child = []
     for param_1, grad_1, param_2, grad_2 in zip(self.m_parent_params[parent_1_idx],
                                                 self.m_parent_grads[parent_1_idx],
@@ -132,12 +132,12 @@ class EA(object):
       rand_mask = torch.randint(0, 2, size=param_1.size())
       inverse = torch.ones_like(rand_mask)
       inverse = inverse - rand_mask
-      params_1 = param_1 - (grad_1 * learning_rate)
-      params_2 = param_2 - (grad_2 * learning_rate)
+      params_1 = param_1 - (grad_1 * lr)
+      params_2 = param_2 - (grad_2 * lr)
       new_params_1 = params_1 * rand_mask
       new_params_2 = params_2 * inverse
       child.append(((params_1 + params_2)/2))
     return child
 
   def decay_lr(self):
-    self.learning_rate = self.lr_decay * self.learning_rate
+    self.lr = self.lr_decay * self.lr
