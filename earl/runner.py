@@ -17,7 +17,7 @@ class EvoACRunner(object):
     """
     def __init__(self, config):
         self.config = config
-        self.config_evo = config['evo_ac']
+        self.config_evo = config['earl']
         self.config_net = config['neural_net']
         self.config_exp = config['experiment']
 

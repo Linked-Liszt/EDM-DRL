@@ -21,7 +21,7 @@ if __name__ == '__main__':
     for hparam_run_idx in range(300):
         config_dict['experiment']['num_runs'] = 7
         config_dict['experiment']['log_path'] = "/home/oxymoren/Desktop/EA/ea-safety/checkpoints/hparam_search_ll"
-        config_dict['experiment']['log_name'] = f"evo_ac_ll_hparam_search_1_{hparam_run_idx}"
+        config_dict['experiment']['log_name'] = f"earl_ll_hparam_search_1_{hparam_run_idx}"
         input_size = 8
         output_size = 4
 
@@ -29,14 +29,14 @@ if __name__ == '__main__':
         activation_function = random.choice(['ReLU', 'Tanh'])
 
         config_dict['experiment']['gamma'] = random.choice([0.98, 0.99, 0.995, 0.999])
-        config_dict['evo_ac']['entropy_coeff'] = random.choice([0.0, 0.01, 0.02, 0.05, 0.1])
-        config_dict['evo_ac']['value_coeff'] = random.choice([0.1, 0.2, 0.5, 1.0])
-        config_dict['evo_ac']['lr_decay'] = random.choice([0.95, 0.97, 0.99])
+        config_dict['earl']['entropy_coeff'] = random.choice([0.0, 0.01, 0.02, 0.05, 0.1])
+        config_dict['earl']['value_coeff'] = random.choice([0.1, 0.2, 0.5, 1.0])
+        config_dict['earl']['lr_decay'] = random.choice([0.95, 0.97, 0.99])
 
         lr = random.choice(np.logspace(-6, -2,num=50))
-        config_dict['evo_ac']['learning_rate'] = [lr,lr]
+        config_dict['earl']['lr'] = [lr,lr]
         lr_2 = random.choice(np.logspace(-6, -2,num=50))
-        config_dict['neural_net']['learning_rate'] = lr_2
+        config_dict['neural_net']['lr'] = lr_2
 
 
         arch = random.randint(0, 3)

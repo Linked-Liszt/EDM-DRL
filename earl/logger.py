@@ -7,7 +7,7 @@ from datetime import datetime
 
 class EvoACLogger(object):
     """
-    Handles experiment data logging and creation of logging artifacts. 
+    Handles experiment data logging and creation of logging artifacts.
 
     Params:
         config (dict): the experiment config
@@ -17,20 +17,20 @@ class EvoACLogger(object):
 
         self.config = config
         self.config_exp = config['experiment']
-        self.config_evoac = config['evo_ac']
+        self.earl_config = config['earl']
 
         self.directory = self.config_exp['log_path']
         self.name = self.config_exp['log_name']
 
         self.print_interval = self.config_exp['print_interval']
-        
+
         self.env = self.config_exp['env']
-        
+
         self.experiment_log = []
         self.run_log = []
         self.run_counter = 0
         self.best_fitness = float('-inf')
-        
+
         self.start_time = datetime.now()
         self.run_end_times = []
         self.run_end_times.append(self.start_time)
@@ -44,7 +44,7 @@ class EvoACLogger(object):
 
     def save_fitnesses(self, model, test_fit, fitnesses, policy_loss, value_loss, gen, timesteps):
         """
-        Saves the fitness of a test run. Also takes some 
+        Saves the fitness of a test run. Also takes some
         loss metrics of the last training step.
 
         """
@@ -66,8 +66,8 @@ class EvoACLogger(object):
 
     def end_run(self):
         """
-        Resets internal variables to prepare for a new run. 
-        Saves previous run data. 
+        Resets internal variables to prepare for a new run.
+        Saves previous run data.
         """
         self.experiment_log.append(self.run_log)
         self.run_log = []
@@ -78,21 +78,21 @@ class EvoACLogger(object):
 
     def end_experiment(self):
         """
-        Steps to take at the end of the experiment. 
-        For now, just data exporting. 
+        Steps to take at the end of the experiment.
+        For now, just data exporting.
         """
         self._export_data('final')
-        
+
     def _export_data(self, export_name):
         """
-        Exports data to the log path as specified in the config. 
+        Exports data to the log path as specified in the config.
         Checks for conflits. The data is exported as a pickle.
 
-        export_name (str): name of the log file to create 
+        export_name (str): name of the log file to create
         """
         data_path = self.directory + '/' + self.name + '_' \
                 + export_name
-         
+
         if os.path.isfile(data_path):
             data_path += datetime.now().strftime("%d_%H_%M_%S")
 
@@ -111,11 +111,11 @@ class EvoACLogger(object):
 
     def print_data(self):
         """
-        Retrieves data from the latest log object and prints it to console. 
-        Gen idx is used to change the interval which data is printed. 
+        Retrieves data from the latest log object and prints it to console.
+        Gen idx is used to change the interval which data is printed.
 
         Params:
-            gen_idx (int): used to determine whether to 
+            gen_idx (int): used to determine whether to
         """
         data_dict = self.run_log[-1]
         display_str = f"\n\nRun {self.run_counter}  Gen {data_dict['gen']}  Timesteps {data_dict['timesteps']} \n" \
@@ -124,4 +124,4 @@ class EvoACLogger(object):
             + f"Full: {data_dict['fit']}\n"\
             + f"Experiment: {self.config_exp['log_name']}"
         print(display_str)
-        
+

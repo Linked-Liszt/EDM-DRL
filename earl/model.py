@@ -7,23 +7,23 @@ from torch.distributions import Categorical
 
 class EvoACModel(nn.Module):
     """
-    The model, both actor and critic, in one class. 
+    The model, both actor and critic, in one class.
     Implemented as a torch Module
 
     Params:
         config_dict (dict): the whole experiment configuration
-        
 
-    TODO: Add ability to contain lstm and RNN layers. 
+
+    TODO: Add ability to contain lstm and RNN layers.
     """
     def __init__(self, config_dict, device):
         super().__init__()
         self.device = device
-        self.evo_config = config_dict['evo_ac']
+        self.evo_config = config_dict['earl']
         self.net_config = config_dict['neural_net']
-        
+
         self._init_model_layers()
-        self.opt = optim.Adam(self.parameters(), lr=self.net_config['learning_rate'])
+        self.opt = optim.Adam(self.parameters(), lr=self.net_config['lr'])
 
 
     def _init_model_layers(self):
@@ -32,14 +32,14 @@ class EvoACModel(nn.Module):
         See _add_layers for more detail.
         """
         self.shared_net = self._add_layers(self.net_config['shared'])
-        self.policy_nets = [self._add_layers(self.net_config['policy']) 
+        self.policy_nets = [self._add_layers(self.net_config['policy'])
                             for _ in range(self.evo_config['pop_size'])]
         self.value_net = self._add_layers(self.net_config['value'])
 
 
     def _add_layers(self, layer_config):
         """
-        Takes a list of layers (see a config) and 
+        Takes a list of layers (see a config) and
         calls and parameterizes the corresponding torch.nn class.
         See _add_layer() for more details.
 
@@ -48,7 +48,7 @@ class EvoACModel(nn.Module):
         output_ml = nn.ModuleList()
         for layer in layer_config:
             output_ml.append(self._add_layer(
-                layer['type'], 
+                layer['type'],
                 layer['params'],
                 layer['kwargs'])).to(self.device)
         return output_ml
@@ -56,7 +56,7 @@ class EvoACModel(nn.Module):
 
     def extract_params(self):
         """
-        Loops through the policy nets and extracts the parameters from the model. 
+        Loops through the policy nets and extracts the parameters from the model.
 
         Returns: (list): Indexed as [individual][layer][parameter]
         """
@@ -73,7 +73,7 @@ class EvoACModel(nn.Module):
 
     def insert_params(self, incoming_params):
         """
-        Loops through the policy nets and inserts the parameters into the model. 
+        Loops through the policy nets and inserts the parameters into the model.
 
         Params:
             incoming_params: (list): Indexed as [individual][layer][parameter]
@@ -92,7 +92,7 @@ class EvoACModel(nn.Module):
 
     def extract_grads(self):
         """
-        Loops through the policy nets and extracts the gradients from the model. 
+        Loops through the policy nets and extracts the gradients from the model.
 
         Returns: (list): Indexed as [individual][layer][parameter]
         """
@@ -109,13 +109,13 @@ class EvoACModel(nn.Module):
 
     def forward(self, x, pop_idx):
         """
-        Standard way of calling a pytorch module. The only excpetion is that the 
-        pop_idx needs to be suppiled. 
+        Standard way of calling a pytorch module. The only excpetion is that the
+        pop_idx needs to be suppiled.
 
         Params:
             x (tensor): the input state
-            pop_idx (int): the index of the population member to use. 
-        
+            pop_idx (int): the index of the population member to use.
+
         Returns: policy, value
             policy: (tensor) the list of probabilities of the action space
             value: (tensor) the caluclated value estimation of the state
@@ -129,26 +129,26 @@ class EvoACModel(nn.Module):
 
         for layer in self.policy_nets[pop_idx]:
             policy = layer(policy)
-        
+
         for layer in self.value_net:
             value = layer(value)
 
 
         # return values for both actor and critic as a tuple of 2 values:
         # 1. a list with the probability of each action over the action space
-        # 2. the value from state s_t 
+        # 2. the value from state s_t
         return policy, value
 
 
     def get_action(self, state, pop_idx):
         """
-        Standard way of calling a pytorch module. The only excpetion is that the 
-        pop_idx needs to be suppiled. 
+        Standard way of calling a pytorch module. The only excpetion is that the
+        pop_idx needs to be suppiled.
 
         Params:
             state (tensor): the input state
-            pop_idx (int): the index of the population member to use. 
-        
+            pop_idx (int): the index of the population member to use.
+
         Returns: policy, log_prob, value
             action (tensor): the action to take
             log_prob (tensor): the log probability of that action being taken
@@ -163,7 +163,7 @@ class EvoACModel(nn.Module):
         action = cat.sample()
 
         return action, cat.log_prob(action), cat.entropy().mean(), value
-    
+
 
     def _add_layer(self, layer_type, layer_params, layer_kwargs):
         """
