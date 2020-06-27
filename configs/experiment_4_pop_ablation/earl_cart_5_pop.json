@@ -10,7 +10,6 @@
     "mut_scale": 0.0,
     "pop_size": 5,
     "recomb_nums": [
-      5,
       3,
       1
     ],
