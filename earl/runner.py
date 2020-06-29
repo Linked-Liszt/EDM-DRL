@@ -64,7 +64,8 @@ class EvoACRunner(object):
                     if test_fit >= self.stop_fit:
                         break
 
-                self.model.insert_params(self.new_pop)
+                if 'evolve_params' not in self.config_evo or self.config_evo['evolve_params']:
+                    self.model.insert_params(self.new_pop)
 
                 if self.timesteps > self.config_exp['timesteps']:
                     break

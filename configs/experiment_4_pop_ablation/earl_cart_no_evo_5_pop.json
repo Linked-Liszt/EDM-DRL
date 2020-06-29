@@ -1,6 +1,7 @@
 {
   "earl": {
     "entropy_coeff": 0.05,
+    "evolve_params": false,
     "hold_elite": true,
     "lr": [
       5e-05,
@@ -8,11 +9,9 @@
     ],
     "lr_decay": 0.98,
     "mut_scale": 0.0,
-    "pop_size": 30,
+    "pop_size": 5,
     "recomb_nums": [
-      15,
-      8,
-      5,
+      3,
       1
     ],
     "value_coeff": 0.5
@@ -20,7 +19,7 @@
   "experiment": {
     "env": "CartPole-v1",
     "log_interval": 2000,
-    "log_name": "earl_cart_30_pop",
+    "log_name": "earl_cart_no_evo_5_pop",
     "log_path": "results/experiment_4_pop_ablation",
     "log_run": false,
     "num_runs": 30,
