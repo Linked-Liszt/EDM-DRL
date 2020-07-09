@@ -21,8 +21,8 @@
   "experiment": {
     "env": "CartPole-v1",
     "log_interval": 2000,
-    "log_name": "earl_cart_10_pop",
-    "log_path": "results/experiment_4_pop_ablation",
+    "log_name": "earl_cart_update_50",
+    "log_path": "results/experiment_5_fast_and_slow",
     "log_run": false,
     "num_runs": 30,
     "print_interval": 1,
