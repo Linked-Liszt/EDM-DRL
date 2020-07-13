@@ -82,21 +82,29 @@ class EvoACRunner(object):
         """
         obs = self.env.reset()
         fitness = 0
+        ep_timesteps = 0
 
         while True:
 
             action, log_p_a, entropy, value = self.model.get_action(self.storage.obs2tensor(obs).to(self.device), pop_idx)
 
             self.timesteps += 1
+            ep_timesteps += 1
 
             obs, reward, done, info = self.env.step(action.cpu().numpy())
             fitness += reward
 
             self.storage.insert(pop_idx, reward, action, log_p_a, value, entropy)
 
+            if ('fast_update' in self.config_evo and self.config_evo['fast_update'] 
+                and ep_timesteps % self.config_evo['fast_update_step'] == 0):
+                self._update_no_evo()
+
             if done:
                 break
 
+        if 'fast_update' in self.config_evo and self.config_evo['fast_update']:
+            self._update_no_evo()
         self.storage.insert_fitness(pop_idx, fitness)
 
 
@@ -106,8 +114,9 @@ class EvoACRunner(object):
         experiences in the stoarage module.
         """
         self.model.opt.zero_grad()
-        loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
-        loss.backward()
+        if self.storage.can_loss:
+            loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
+            loss.backward()
         self.evo.set_grads(self.model.extract_grads())
 
         self.model.opt.step()
@@ -116,6 +125,16 @@ class EvoACRunner(object):
 
         with torch.no_grad():
             self.new_pop = self.evo.create_new_pop()
+        
+    
+    def _update_no_evo(self):
+        if self.storage.can_loss:
+            self.model.opt.zero_grad()
+            loss, self.policy_loss_log, self.value_loss_log = self.storage.get_loss()
+            loss.backward()
+            self.model.opt.step()
+        self.storage.reset_storage(False)
+
 
     def _reset_experiment(self):
         """

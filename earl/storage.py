@@ -26,13 +26,15 @@ class EvoACStorage():
         # initialize the buffers with zeros
         self.reset_storage()
 
-    def reset_storage(self):
+    def reset_storage(self, reset_fitness=True):
+        self.can_loss = False
         self.entropies = 0
         self.actions = [[] for _ in range(self.pop_size)]
         self.log_probs = [[] for _ in range(self.pop_size)]
         self.rewards = [[] for _ in range(self.pop_size)]
         self.values = [[] for _ in range(self.pop_size)]
-        self.fitnesses = [0] * self.pop_size
+        if reset_fitness:
+            self.fitnesses = [0] * self.pop_size
 
 
     def obs2tensor(self, obs):
@@ -41,6 +43,7 @@ class EvoACStorage():
 
 
     def insert(self, pop_idx, reward, action, log_prob, value, entropy):
+        self.can_loss = True
         self.rewards[pop_idx].append(reward)
         self.actions[pop_idx].append(action)
         self.entropies += entropy
