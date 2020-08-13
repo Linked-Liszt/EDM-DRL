@@ -1,4 +1,4 @@
-# EDM-RL: Toward Stable Reinforcement Learning through Evolutionary Algorithms
+# EDM-DRL: Toward Stable Reinforcement Learning through Evolutionary Algorithms
 
 ## Abstract
 
