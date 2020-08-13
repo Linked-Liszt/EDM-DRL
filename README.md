@@ -1,16 +1,16 @@
-# EARL: Toward Stable Reinforcement Learning through Evolutionary Algorithms
+# EDM-RL: Toward Stable Reinforcement Learning through Evolutionary Algorithms
 
 ## Abstract
 
-Deep reinforcement learning (RL) has experienced tremendous growth in the past few years. However, training stability of agents continues to be an open research question. Here, the authors present a closely entwined hybrid method which combines concepts from the fields of evolutionary computing (EC) and deep RL as a means of mitigating training instability in RL agents. We are able to show that our method trains more consistently than RL and EC baselines alone. We also show that by employing ensemble methods, performance of RL agents can be improved during test time while simultaneously preserving the training stability of the agent. Finally, we conduct an ablation study to identify components within the EARL agent responsible for highest contribution. Though this work is in its early phases, it stands to benefit the stability of RL agents during training by combining multiple AI disciplines.
+Deep reinforcement learning (DRL) has experienced tremendous growth in the past few years. However, training stability of agents continues to be an open research question. Here, the authors present Ensembled Directed Mutation of Deep Reinforcement Learning (EDM-DRL) - a hybridization of evolutionary computing (EC), ensemble learning, and DRL methods as a means of mitigating training instability in DRL agents. We show that our method trains more consistently than DRL baselines alone. We also show that by employing our novel mutation and ensemble methods, performance of DRL agents can be improved during test time without sacrificing training stability. Further, though a similar number of time steps are used, we show that the EDM-DRL algorithm uses a mere 1% or less of the network parameter updates used in Advantage Actor Critic (A2C). Finally, we conduct an ablation study to identify components within the EDM-DRL algorithm responsible for highest contribution.
 
 ## Results
 
 The graphs which correspond to the results of this work are documented below.
 
 <img src="graphics/baseline.png"/>
-As shown, though the A2C algorithm is able to solve the environment faster on average, the EARL agent
-is able to solve the environment with a tighter standard deviation than both the A2C and CGP baselines.
+As shown, though the A2C algorithm is able to solve the environment faster on average, the EDM-DRL method 
+is able to solve the environment with a tighter standard deviation than the A2C baseline.
 
 <img src="graphics/ensemble.png"/>
 This demonstrates that the weight voting mechanism is able to out perform the 1-elite strategy. In
