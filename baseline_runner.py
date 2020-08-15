@@ -20,7 +20,16 @@ def main():
 
 def run(logger: bl.BaseLineLogger):
     env = gym.make('CartPole-v1')
-    model = PPO2(MlpPolicy, env, verbose=0)
+    model = PPO2(MlpPolicy, env,
+                n_steps=32,
+                nminibatches=1,
+                lam=0.8,
+                gamma=0.98,
+                noptepochs=20,
+                ent_coef=0.0,
+                learning_rate=0.001,
+                cliprange = 0.2,
+                verbose=1)
 
     for batch_idx in range(50):
         model.learn(total_timesteps=2000)
@@ -29,6 +38,9 @@ def run(logger: bl.BaseLineLogger):
         total_timesteps = (batch_idx + 1) * 2000
         logger.save_fitnesses(test_fitness, total_timesteps, batch_idx)
         logger.print_data()
+
+        if test_fitness == 500.0:
+            break
 
     logger.end_run()
 
