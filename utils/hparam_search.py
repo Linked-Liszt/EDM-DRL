@@ -20,6 +20,15 @@ with open(config_path, 'r') as config_file:
     CONFIG = json.load(config_file)
 
 
+POPULATIONS = {
+    '3': [2],
+    '5': [3, 1],
+    '8': [4, 2, 1],
+    '10': [5, 3, 1],
+    '15': [8, 3, 2, 1]
+}
+
+
 def edm_opt(trial: optuna.Trial) -> int:
     global CONFIG
     global NUM_RUNS
@@ -29,12 +38,15 @@ def edm_opt(trial: optuna.Trial) -> int:
     input_size = 8
     output_size = 4
 
+
+    new_config['earl']['pop_size'] = trial.suggest_categorical('pop_size', [3, 5, 8, 10, 15])
+    new_config['earl']['recomb_nums'] = POPULATIONS[str(new_config['earl']['pop_size'])]
+
     new_config['experiment']['gamma'] = trial.suggest_categorical('gamma', [0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 0.9999])
     new_config['earl']['entropy_coeff'] = trial.suggest_loguniform('ent_coef', 0.00000001, 0.1)
-    new_config['earl']['value_coeff'] = trial.suggest_categorical('value_coeff', [0.1, 0.2, 0.5, 1.0])
     new_config['earl']['lr_decay'] = trial.suggest_categorical('lr_decay', [0.95, 0.97, 0.99])
 
-    lr_evo = trial.suggest_loguniform('lr_evo', 1e-5, 1)
+    lr_evo = trial.suggest_loguniform('lr_evo', 1e-7, 1)
     new_config['earl']['lr'] = [lr_evo, lr_evo]
     new_config['neural_net']['lr'] = trial.suggest_loguniform('lr_opt', 1e-7, 1)
 
